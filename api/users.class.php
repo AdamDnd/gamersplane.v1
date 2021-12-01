@@ -31,6 +31,8 @@
 				$this->removeThreadNotification($_POST['postID']);
 			} elseif ($pathOptions[0] == 'setUserTheme') {
 				$this->setUserTheme($_POST['darkTheme']);
+			} elseif ($pathOptions[0] == 'rss') {
+				$this->getRssFeed($_GET['feed']);
 			} else {
 				displayJSON(['failed' => true]);
 			}
@@ -655,6 +657,43 @@
 			}
 
 			return true;
+		}
+
+		public function getRssFeed($feed){
+			list($userId,$checkKey) = explode('-',$feed);
+
+			$mongo = DB::conn('mongo');
+			$threadNotifications = $mongo->notificiations->findOne(
+				[
+					'userID' => $userId
+				],
+				['projection' => [
+					'threadNotifications' => true
+				]]
+			);
+
+			$xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"/>');
+
+			$channel = $xml->addChild('channel');
+			$channel->addChild('title',"Gamers' Plane");
+			$channel->addChild('link','https://gamersplane.com');
+			$channel->addChild('description',"Gamers' Plane notifications");
+			$channel->addChild('pubDate',gmdate('r'));
+			$channel->addChild('ttl',"5");
+
+			if($threadNotifications && is_countable($threadNotifications["threadNotifications"])) {
+				foreach ($threadNotifications["threadNotifications"] as $threadNotification) {
+					$item = $channel->addChild('item');
+					$item->addChild('title',$threadNotification['title']);
+					$item->addChild('link',$threadNotification['link']);
+					$item->addChild('pubDate',$threadNotification['date']);
+					$item->addChild('description',$threadNotification['text']);
+				}
+			}
+
+			header('Content-type: text/xml');
+			$output=$xml->asXML();
+			echo $output;
 		}
 	}
 ?>

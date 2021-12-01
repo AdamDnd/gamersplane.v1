@@ -405,7 +405,7 @@
 		}
 
 		private function addMentions($post){
-			global $mysql;
+			global $mysql, $currentUser,
 			$mongo = DB::conn('mongo');
 
 			$userIds = ThreadManager::getUserIdsFromMentions($post->message);
@@ -428,20 +428,24 @@
 								'postID' => ((int) $post->getPostID()),
 								'forumTitle'=>$this->getForumProperty('title'),
 								'threadTitle' => $postTitle,
-								'notificationType' => ThreadNotificationTypeEnum::MENTION
+								'notificationType' => ThreadNotificationTypeEnum::MENTION,
+								'date'=>date('Y-m-d H:i:s'),
+								'from'=>$currentUser->username
 							]
 						]]
 					);
+
+					ThreadManager::addNotificationEntry((int)$playerUserId,
+														$this->getForumProperty('title').'/'.$postTitle,
+														'',
+														'/forums/thread/'.$threadIdAsInt.'/?p='.$post->getPostID().'#'.$post->getPostID(),
+														ThreadNotificationTypeEnum::MENTION);
 				}
 			}
 		}
 
 
 		private function addThreadNotification($notificationType, $post){
-
-			if($notificationType==ThreadNotificationTypeEnum::NEW_POST){
-				return;  //Not putting these on the homepage.  But if we use push notifications then this would be the point to intercept them
-			}
 
 			$gameID=$this->forumManager->forums[$this->thread->forumID]->getGameID();
 			if($gameID){
@@ -476,7 +480,7 @@
 
 				foreach ($gameInfo['players'] as &$player) {
 					$playerUserId=$player['user']['userID'];
-					if($playerUserId!=$currentUser->userID && $player['approved']){
+					if($playerUserId != $currentUser->userID && $player['approved']){
 
 						//pull previous notifications
 						$mongo->users->updateOne(
@@ -492,13 +496,37 @@
 									'postID' => $postIdAsInt,
 									'forumTitle'=>$this->getForumProperty('title'),
 									'threadTitle' => $postTitle,
-									'notificationType' => $notificationType
+									'notificationType' => $notificationType,
+									'date'=>date('Y-m-d H:i:s'),
+									'from'=>$currentUser->username
 								]
 							]]
 						);
+
+						ThreadManager::addNotificationEntry((int)$playerUserId,
+															$this->getForumProperty('title').'/'.$postTitle,
+															'',
+															'/forums/thread/'.$threadIdAsInt.'/?p='.$postIdAsInt.'#'.$postIdAsInt,
+															$notificationType);
 					}
 				}
 			}
+		}
+
+		public static function addNotificationEntry($toUserId, $title, $text, $link, $notificationType){
+			$mongo->notifications->updateOne(
+				['userID' => ((int)$toUserId)],
+				['$push' => [
+					'threadNotifications' => [
+						'title' => $title,
+						'text' => $text,
+						'link'=>$link,
+						'notificationType' => $notificationType,
+						'date'=>date('Y-m-d H:i:s'),
+						'from'=>$currentUser->username
+					]
+				]]
+			);
 		}
 	}
 

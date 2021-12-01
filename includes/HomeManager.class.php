@@ -254,8 +254,10 @@
 
 			if($threadNotifications && is_countable($threadNotifications["threadNotifications"])){
 				foreach ($threadNotifications["threadNotifications"] as $threadNotification) {
-					$notification='<div class="notify notifyThread notifyThread-'.$threadNotification['notificationType'].' col-1-2 mob-col-1"><a data-postid="'.$threadNotification['postID'].'" href="/forums/thread/'.$threadNotification['threadID'].'/?p='.$threadNotification['postID'].'#p'.$threadNotification['postID'].'">'.$threadNotification['forumTitle'].' &gt; '.$threadNotification['threadTitle'].'</a></div>';
-					$notifications[]=$notification;
+					if($threadNotification['notificationType'] > 1){
+						$notification='<div class="notify notifyThread notifyThread-'.$threadNotification['notificationType'].' col-1-2 mob-col-1"><a data-postid="'.$threadNotification['postID'].'" href="/forums/thread/'.$threadNotification['threadID'].'/?p='.$threadNotification['postID'].'#p'.$threadNotification['postID'].'">'.$threadNotification['forumTitle'].' &gt; '.$threadNotification['threadTitle'].'</a></div>';
+						$notifications[]=$notification;
+					}
 				}
 			}
 
