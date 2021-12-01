@@ -663,9 +663,9 @@
 			list($userId,$checkKey) = explode('-',$feed);
 
 			$mongo = DB::conn('mongo');
-			$threadNotifications = $mongo->notificiations->findOne(
+			$threadNotifications = $mongo->notifications->findOne(
 				[
-					'userID' => $userId
+					'userID' => ((int)$userId)
 				],
 				['projection' => [
 					'threadNotifications' => true
@@ -677,7 +677,7 @@
 			$channel = $xml->addChild('channel');
 			$channel->addChild('title',"Gamers' Plane");
 			$channel->addChild('link','https://gamersplane.com');
-			$channel->addChild('description',"Gamers' Plane notifications");
+			$channel->addChild('description',"Gamers' Plane notifications".($threadNotifications?"y":"n"));
 			$channel->addChild('pubDate',gmdate('r'));
 			$channel->addChild('ttl',"5");
 
@@ -685,7 +685,7 @@
 				foreach ($threadNotifications["threadNotifications"] as $threadNotification) {
 					$item = $channel->addChild('item');
 					$item->addChild('title',$threadNotification['title']);
-					$item->addChild('link',$threadNotification['link']);
+					$item->addChild('link','https://gamersplane.com'.$threadNotification['link']);
 					$item->addChild('pubDate',$threadNotification['date']);
 					$item->addChild('description',$threadNotification['text']);
 				}

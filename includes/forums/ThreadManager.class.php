@@ -405,7 +405,7 @@
 		}
 
 		private function addMentions($post){
-			global $mysql, $currentUser,
+			global $mysql, $currentUser;
 			$mongo = DB::conn('mongo');
 
 			$userIds = ThreadManager::getUserIdsFromMentions($post->message);
@@ -435,10 +435,10 @@
 						]]
 					);
 
-					ThreadManager::addNotificationEntry((int)$playerUserId,
+					ThreadManager::addNotificationEntry((int)$mentionUserId,
 														$this->getForumProperty('title').'/'.$postTitle,
-														'',
-														'/forums/thread/'.$threadIdAsInt.'/?p='.$post->getPostID().'#'.$post->getPostID(),
+														$post->message,
+														'/forums/thread/'.((int)$this->threadID).'/?p='.$post->getPostID().'#'.$post->getPostID(),
 														ThreadNotificationTypeEnum::MENTION);
 				}
 			}
@@ -505,7 +505,7 @@
 
 						ThreadManager::addNotificationEntry((int)$playerUserId,
 															$this->getForumProperty('title').'/'.$postTitle,
-															'',
+															$post->message,
 															'/forums/thread/'.$threadIdAsInt.'/?p='.$postIdAsInt.'#'.$postIdAsInt,
 															$notificationType);
 					}
@@ -514,19 +514,23 @@
 		}
 
 		public static function addNotificationEntry($toUserId, $title, $text, $link, $notificationType){
-			$mongo->notifications->updateOne(
-				['userID' => ((int)$toUserId)],
-				['$push' => [
-					'threadNotifications' => [
-						'title' => $title,
-						'text' => $text,
-						'link'=>$link,
-						'notificationType' => $notificationType,
-						'date'=>date('Y-m-d H:i:s'),
-						'from'=>$currentUser->username
-					]
-				]]
-			);
+			global $mongo,$currentUser;
+			if($toUserId){
+				$mongo->notifications->updateOne(
+					['userID' => ((int)$toUserId)],
+					['$push' => [
+						'threadNotifications' => [
+							'title' => $title,
+							'text' => ForumSearch::getTextSnippet(Post::extractFullText($text),200),
+							'link'=>$link,
+							'notificationType' => $notificationType,
+							'date'=>date('r'),
+							'from'=>$currentUser->username
+						]
+					]],
+					['upsert' => true]
+				);
+				}
 		}
 	}
 
