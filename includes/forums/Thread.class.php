@@ -115,7 +115,7 @@
 
 			if ($page > ceil($this->postCount / $this->pageSize)) $page = ceil($this->postCount / $this->pageSize);
 			$start = ($page - 1) * $this->pageSize;
-			$posts = $mysql->query("SELECT p.postID, p.threadID, p.title, u.userID, u.username, um.metaValue avatarExt, u.lastActivity, p.message, p.postAs, p.datePosted, p.lastEdit, p.timesEdited FROM posts p LEFT JOIN users u ON p.authorID = u.userID LEFT JOIN usermeta um ON u.userID = um.userID AND um.metaKey = 'avatarExt' WHERE p.threadID = {$this->threadID} ORDER BY p.datePosted LIMIT {$start}, ".$this->pageSize);
+			$posts = $mysql->query("SELECT p.postID, p.threadID, p.title, u.userID, u.username, um.metaValue avatarExt, u.lastActivity, p.message, p.postAs, p.datePosted, p.lastEdit, p.timesEdited, IF(u.lastActivity >= UTC_TIMESTAMP() - INTERVAL 15 MINUTE, 1, 0) online FROM posts p LEFT JOIN users u ON p.authorID = u.userID LEFT JOIN usermeta um ON u.userID = um.userID AND um.metaKey = 'avatarExt' WHERE p.threadID = {$this->threadID} ORDER BY p.datePosted LIMIT {$start}, ".$this->pageSize);
 			foreach ($posts as $post)
 				$this->posts[$post['postID']] = new Post($post);
 
