@@ -39,6 +39,7 @@
 				$this->author->username = $loadData['username'];
 				$this->author->avatarExt = $loadData['avatarExt'];
 				$this->author->lastActivity = $loadData['lastActivity'];
+				$this->author->online = $loadData['online'];
 			}
 		}
 
