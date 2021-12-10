@@ -74,6 +74,7 @@ mySettings = {
 	]
 };
 
+mobileifyMenus(mySettings);
 
 $(function () {
 	$('body').on('click', '.markItUpButton10 ul li:not(.playerNoteAdd):not(.playerPrivateAdd):not(.playerMention)', function (e) {
