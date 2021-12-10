@@ -28,6 +28,8 @@
 				displayJSON($this->getPostPreview($_POST['postText'],$_POST['postAsId'], $_POST['postAsName']));
 			} elseif ($pathOptions[0] == 'pollVote') {
 				displayJSON($this->pollVote( $_POST['postId'], $_POST['vote'], $_POST['addVote'], $_POST['isMulti']));
+			} elseif ($pathOptions[0] == 'typingIndicator') {
+				displayJSON($this->typingIndicator( (int)$_POST['threadId'], (int)$_POST['typingStatus']));
 //			} elseif ($pathOptions[0] == 'ftReindex') {
 //				displayJSON($this->ftReindex( $_POST['fromId'], $_POST['toId']));
 			}else {
@@ -418,6 +420,65 @@
 			else {
 				return null;
 			}
+		}
+
+		public function typingIndicator($threadID, $typingStatus){
+			global $currentUser;
+			$mongo = DB::conn('mongo');
+			$threadManager = new ThreadManager($threadID);
+
+			if ($threadManager->getPermissions('write')){
+				if($typingStatus==0 || $typingStatus==2){
+					$mongo->threads->updateOne(
+						['threadID' => $threadID],
+						['$pull' => [
+							'typing' => [
+								'userID' => $currentUser->userID
+							]
+						]],
+						['upsert' => true]
+					);
+				}
+
+				$mongo->threads->updateOne(
+					['threadID' => $threadID],
+					['$pull' => [
+						'typing' => [
+							'timestamp' => ['$lt'=> genMongoDate(strtotime('-5 minutes'))]
+						]
+					]],
+					['upsert' => true]
+				);
+
+				if($typingStatus==2){
+					$mongo->threads->updateOne(
+						['threadID' => $threadID],
+						['$push' => [
+							'typing' => [
+								'userID' => $currentUser->userID,
+								'username' => $currentUser->username,
+								'timestamp' => genMongoDate(),
+							]
+						]],
+						['upsert' => true]
+					);
+				}
+
+				$threadTyping=$mongo->threads->findOne(['threadID' => $threadID]);
+
+				$ret=[];
+				if($threadTyping && is_countable($threadTyping["typing"])){
+					foreach ($threadTyping["typing"] as $personTyping) {
+						if($personTyping["userID"]!=$currentUser->userID){
+							$ret[]=$personTyping["username"];
+						}
+					}
+				}
+
+				return $ret;
+			}
+
+			return null;
 		}
 
 		/*

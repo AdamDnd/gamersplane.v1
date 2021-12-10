@@ -3,9 +3,9 @@
 	require_once(FILEROOT.'/javascript/markItUp/markitup.bbcode-parser.php');
 	addPackage('forum');
 	if($currentUser->addPostNavigateWarning()){
-		$addJSFiles = Array('forums/unsaved-work.js','forums/postingPage.js','postPolls.js');
+		$addJSFiles = Array('forums/unsaved-work.js','forums/postingPage.js','postPolls.js','typingIndicator.js');
 	}else{
-		$addJSFiles = Array('forums/postingPage.js','postPolls.js');
+		$addJSFiles = Array('forums/postingPage.js','postPolls.js','typingIndicator.js');
 	}
 
 
@@ -227,6 +227,8 @@
 		echo "\t\t\t".'<input type="hidden" name="threadID" value="'.$threadID.'">'."\n";
 	}
 
+	echo "\t\t\t".'<div style="display:none;" id="typingThreadId">'.$threadID.'</div>';
+
 	if ($fillVars) {
 		$title = printReady($fillVars['title']);
 	} elseif (!strlen($post->getTitle()) && $threadManager->getThreadID()) {
@@ -264,6 +266,7 @@
 <?php	}?>
 				</div>
 				<textarea id="messageTextArea" name="message" tabindex="<?=tabOrder()?>"><?=$fillVars ? $fillVars['message'] : $post->message?></textarea>
+				<div id="typingIndicator"></div>
 				<?php if ($editPost) {?>
 				<p><input type="checkbox" name="minorChange" checked="checked"> This is a minor edit</p>
 				<?php }?>
