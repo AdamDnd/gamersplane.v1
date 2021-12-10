@@ -3,9 +3,9 @@
 	require_once(FILEROOT.'/javascript/markItUp/markitup.bbcode-parser.php');
 	addPackage('forum');
 	if($currentUser->addPostNavigateWarning()){
-		$addJSFiles = Array('forums/unsaved-work.js','forums/postingPage.js','postPolls.js');
+		$addJSFiles = Array('forums/unsaved-work.js','forums/postingPage.js','postPolls.js','typingIndicator.js');
 	}else{
-		$addJSFiles = Array('forums/postingPage.js','postPolls.js');
+		$addJSFiles = Array('forums/postingPage.js','postPolls.js','typingIndicator.js');
 	}
 
 	$threadID = intval($pathOptions[1]);
@@ -44,6 +44,7 @@
 ?>
 <?php	require_once(FILEROOT.'/header.php'); ?>
 		<h1 class="headerbar"> <?$threadManager->addThreadIcon()?><?=$threadManager->getThreadProperty('title')?></h1>
+		<div style="display:none;" id="typingThreadId"><?=$threadID?></div>
 		<div class="hbMargined">
 			<div id="threadMenu">
 				<div class="leftCol">
@@ -414,6 +415,7 @@
 				</div>
 <?php		} ?>
 				<textarea id="messageTextArea" name="message"></textarea>
+				<div id="typingIndicator"></div>
 				<div class="alignRight">
 				<button id="previewPost" class="fancyButton" accesskey="p" type="button">Preview</button>
 				<button id="postPost" type="submit" name="post" class="fancyButton submitButton">Post</button>

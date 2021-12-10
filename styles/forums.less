@@ -2385,6 +2385,17 @@ h1.forumSearch{
 	}
 }
 
+#typingIndicator{
+	visibility: hidden;
+	font-size: 80%;
+	font-style: italic;
+	color: #888;
+
+	&:after{
+		content: '...';
+	}
+}
+
 @media only screen and (max-width: @mobile-breakpoint){
 	.ft_search li .ft_post_info .ft_poster a.username{
 		display: block;
