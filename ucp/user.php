@@ -60,6 +60,10 @@
 						<div>{{posts.gamePostCount}}</div>
 					</div>
 				</div>
+				<div class="userActivityChart">
+					<div ng-repeat="month in userChart.last12Months" style="height:{{month.n/userChart.chartBoxSize}}px;" class="activitymonthVal" title="{{month.n}}"></div>
+					<div ng-repeat="month in userChart.last12Months" class="activityMonthName" title="{{month.n}}">{{month.monthName}}</div>
+				</div>
 			</div>
 			<div class="activeGames userInfoBox"  ng-if="activeGames.length">
 				<h2 class="headerbar hbDark">Active Games</h2>
