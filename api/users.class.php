@@ -237,6 +237,9 @@
 			}
 			$user->getAllUsermeta();
 
+			$mysql = DB::conn('mysql');
+			$userActivity = $mysql->query("select year(dateposted) as y,month(dateposted) as m,count(*) as n from posts where authorID={$user->userID} group by year(dateposted),month(dateposted) order by year(dateposted),month(dateposted)")->fetchAll(PDO::FETCH_OBJ);
+
 			$details = [
 				'userID' => $user->userID,
 				'username' => $user->username,
@@ -258,6 +261,7 @@
 				'theme' =>  $user->theme??'',
 				'warnUnsaved' =>  $user->warnUnsaved??'',
 				'lookingForAGame' => $user->lookingForAGame ? $user->lookingForAGame : "0",
+				'userActivity'=>$userActivity
 			];
 			if ($getAll) {
 				$details = array_merge($details, [
