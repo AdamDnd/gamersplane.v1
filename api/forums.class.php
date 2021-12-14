@@ -30,6 +30,8 @@
 				displayJSON($this->pollVote( $_POST['postId'], $_POST['vote'], $_POST['addVote'], $_POST['isMulti'], $_POST['isPublic']));
 			} elseif ($pathOptions[0] == 'typingIndicator') {
 				displayJSON($this->typingIndicator( (int)$_POST['threadId'], (int)$_POST['typingStatus']));
+			} elseif ($pathOptions[0] == 'ffgFlip') {
+				displayJSON($this->ffgFlip( $_POST['postId'], $_POST['toDark'], $_POST['totalFlips'], $_POST['tokens']));
 //			} elseif ($pathOptions[0] == 'ftReindex') {
 //				displayJSON($this->ftReindex( $_POST['fromId'], $_POST['toId']));
 			}else {
@@ -480,6 +482,39 @@
 			}
 
 			return null;
+		}
+
+		public function ffgFlip($postID, $toDark, $totalFlips, $tokens){
+			global $currentUser;
+			$mongo = DB::conn('mongo');
+			$post = new Post($postID);
+			$threadManager = new ThreadManager($post->getThreadID());
+
+			if ($threadManager->getPermissions('write')){
+				$flips=$post->getFfgDestinyResults($tokens);
+				if(count($flips['flips'])==$totalFlips){
+					$mongo->threads->updateOne(
+						['threadID' => ((int)$post->getThreadID())],
+						['$push' => [
+							'ffgTokens' => [
+								'postID' => (int)$postID,
+								'userID' => $currentUser->userID,
+								'username' => $currentUser->username,
+								'toDark' => (int)$toDark,
+								'datetime'=>genMongoDate()
+							]
+						]],
+						['upsert' => true]
+					);
+					$flips=$post->getFfgDestinyResults($tokens);
+					$flips['success']=1;
+				}
+
+				return $flips;
+			}
+			else {
+				return null;
+			}
 		}
 
 		/*
