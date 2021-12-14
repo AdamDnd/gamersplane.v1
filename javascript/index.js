@@ -42,4 +42,32 @@ $(function() {
         });
     });
 
+    $('<span style="float:right;cursor:pointer;"><img src="/images/sleepingWhite.png" title="Snooze games" class="snoozeToggle"/></span>').appendTo('#yourGames h3.gamesheaderbar').on('click',function(){
+        $('#yourGames').toggleClass('snoozeMode');
+        if($('#yourGames').hasClass('snoozeMode')){
+            $('#yourGames .sudoTable .tr .name').each(function(){
+                $('<img src="/images/sleeping.png" class="snoozer"/>').prependTo($(this));
+            });
+        }else{
+            $('#yourGames .sudoTable .tr .snoozer').remove();
+            var snoozeUrls=[];
+            $('#yourGames .sudoTable .tr.snoozed').each(function(){
+                snoozeUrls.push($('.name a',this).attr('href'));
+            });
+            storage.setItem('snoozeGames', JSON.stringify(snoozeUrls));
+        }
+    });
+
+    $('#yourGames').on('click','.snoozer',function(){
+        $(this).closest('.tr').toggleClass('snoozed');
+    });
+
+    var snoozedGames=storage.getItem('snoozeGames');
+    if(snoozedGames){
+        var snoozeGames=JSON.parse(snoozedGames);
+        for(var i=0;i<snoozeGames.length;i++){
+            $('#yourGames .sudoTable .tr.noPosts:has(.name a[href="'+snoozeGames[i]+'"])').addClass('snoozed');
+        }
+    }
+
 });
