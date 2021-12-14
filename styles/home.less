@@ -290,3 +290,30 @@ h3 {
 
 
 }
+
+#yourGames{
+	.tr.noPosts.snoozed{
+		display: none;
+	}
+
+	.saveSnooze{
+		display: none;
+	}
+
+	&.snoozeMode{
+		.snoozer{
+			cursor: pointer;
+		}
+
+		.tr.noPosts.snoozed{
+			display: block;
+		}
+
+		.snoozed{
+			opacity:0.5;
+			a{
+				color: #888;
+			}
+		}
+	}
+}
