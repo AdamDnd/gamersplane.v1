@@ -68,8 +68,6 @@ $(function() {
 		submenu.slideToggle(250).toggleClass('fm_smOpen');
 	});
 
-
-
 	var loadForumLinks=function(forumLink){
 		if(forumLink.length>0){
 			var forumUrl=forumLink.attr('href');

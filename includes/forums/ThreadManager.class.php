@@ -272,7 +272,7 @@
 
 		public function displayBreadcrumbs($pathOptions,$post,$quoteID){
 			?>
-			<div id="breadcrumbs">
+			<div class="breadcrumbs">
 				<?
 				$this->forumManager->displayForumBreadcrumbs();
 
@@ -351,8 +351,8 @@
 				$sticky = $this->thread->getStates('sticky') ? 'unsticky' : 'sticky';
 				$lock = $this->thread->getStates('locked') ? 'unlock' : 'lock';
 			?>
-				<span>
-					<form id="threadOptions" method="post" action="/forums/process/modThread/">
+				<span class="moderationButtons">
+					<form class="threadOptions" method="post" action="/forums/process/modThread/">
 						<input type="hidden" name="threadID" value="<?=$this->threadID?>">
 						<button type="submit" name="sticky" title="<?=ucwords($sticky)?> Thread" alt="<?=ucwords($sticky)?> Thread" class="<?=$sticky?>"></button>
 						<button type="submit" name="lock" title="<?=ucwords($lock)?> Thread" alt="<?=ucwords($lock)?> Thread" class="<?=$lock?>"></button>
