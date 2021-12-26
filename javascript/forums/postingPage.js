@@ -55,7 +55,7 @@ $(function() {
 			},
 			data:{ postText: $('#messageTextArea').val(), postAsId: selOpt.val(), postAsName: selOpt.text()},
 			success:function (data) {
-				$('.postPreview .post').html(data.post).darkModeColorize();
+				$('.postPreview .post').html(data.post).darkModeColorize().zoommap();
 
 				var title=$('input#title');
 				if(title.length){
