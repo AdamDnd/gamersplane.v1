@@ -4,6 +4,12 @@ controllers.controller('user', ['$scope', '$http', 'CurrentUser', 'UsersService'
 		$scope.user = null;
 		$scope.systems = {};
 		$scope.profileFields = { 'location': 'Location', 'aim': 'AIM', 'yahoo': 'Yahoo!', 'msn': 'MSN' };
+		$scope.userChart = {last12Months:[], chartBoxSize:10};
+		var today=new Date();
+		for(var i=0;i<12;i++){
+			var addMonth = new Date(today.getFullYear(), today.getMonth()-11+i, 1);
+			$scope.userChart.last12Months.push({y:addMonth.getFullYear(),m:addMonth.getMonth()+1,n:0,monthName:moment(addMonth).format("MMM")});
+		}
 
 		pathElements = getPathElements();
 		userID = null;
@@ -31,6 +37,28 @@ controllers.controller('user', ['$scope', '$http', 'CurrentUser', 'UsersService'
 						ele.percentage = Math.round(ele.numGames / $scope.gameCount * 100);
 					});
 					$scope.activeGames = response.data.activeGames;
+
+					var maxVal=0;
+					for(var i=0;i<$scope.userChart.last12Months.length;i++){
+						for(var j=0;j<$scope.user.userActivity.length;j++){
+							if($scope.userChart.last12Months[i].m==$scope.user.userActivity[j].m && $scope.userChart.last12Months[i].y==$scope.user.userActivity[j].y){
+								$scope.userChart.last12Months[i].n=$scope.user.userActivity[j].n;
+								maxVal=Math.max(maxVal,$scope.user.userActivity[j].n);
+								break;
+							}
+						}
+					}
+
+					if(maxVal<100){
+						$scope.userChart.chartBoxSize=1;
+					} else if(maxVal<500){
+						$scope.userChart.chartBoxSize=5;
+					} else if(maxVal<1000){
+						$scope.userChart.chartBoxSize=10;
+					} else {
+						$scope.userChart.chartBoxSize=10;
+					}
+
 				});
 				$scope.$emit('pageLoading');
 			}

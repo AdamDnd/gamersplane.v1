@@ -176,6 +176,27 @@
 	}
 }
 
+.userActivityChart{
+	display: grid;
+	grid-auto-columns: minmax(0, 1fr);
+	margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: solid 1px #888;
+
+	.activitymonthVal{
+		background: url(../images/users/chartback.png) repeat-x bottom left;
+		grid-row: ~"1/2";
+		background-color: @gp-orange;
+		align-self: baseline;
+		margin: 0 3px;
+	}
+	.activityMonthName{
+		grid-row: ~"2/3";
+		justify-self: center;
+		font-size: 90%;
+	}
+}
+
 @media only screen and (max-width: @mobile-breakpoint){
 	#page_user {
 		#leftCol {
