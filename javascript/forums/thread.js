@@ -59,7 +59,6 @@ $(function() {
 
 	});
 
-
 //forums menu
 	var newMenu=$('<li id="fm_forumthreads"><a class="menuLink">Threads</a><ul class="submenu"></li></li>').appendTo($('#fixedMenu_window .leftCol'));
 	$('.menuLink',newMenu).on('click',function(){
