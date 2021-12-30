@@ -14,7 +14,7 @@ $(function() {
 
 		$.get(backfillLocation, function (data) {
 			var block=$('.postBlock:not(.postPreview)', $(data));
-			(block.clone().insertAfter(pThis)).addClass('postBlockFound').darkModeColorize();
+			(block.clone().insertAfter(pThis)).addClass('postBlockFound').darkModeColorize().convertTimeZones();;
 			var newHeight=$(document).height()
 
 			$(window).scrollTop(startScroll+(newHeight-startHeight));
