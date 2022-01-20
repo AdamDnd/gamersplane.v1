@@ -326,29 +326,44 @@ body.modal {
 
 
 .rollResultTotal,.parsedRolls{
-	.rollVal-success{
+	.rollVal-success,
+    .rollVal-green {
 		color:#0c2;
 	}
-	.rollVal-fail{
+	.rollVal-fail,
+    .rollVal-red {
 		color: #f44;
 	}
-	.rollVal-info{
+	.rollVal-info,
+    .rollVal-blue {
 		color: #38f;
+	}
+
+    .rollVal-yellow {
+		color: #b8a500;
 	}
 
 	.rollVal-invert{
 		background-color: #fff;
 		color: #333;
-		&.rollVal-success{
+		&.rollVal-success,
+        &.rollVal-green {
 			background-color: #0a0;
             color: #fff;
 		}
-		&.rollVal-fail{
+		&.rollVal-fail,
+        &.rollVal-red {
 			background-color: #800;
             color: #fff;
 		}
-		&.rollVal-info{
+		&.rollVal-info,
+        &.rollVal-blue {
 			background-color: #38f;
+            color: #fff;
+		}
+
+        &.rollVal-yellow {
+			background-color: #b8a500;
             color: #fff;
 		}
 	}

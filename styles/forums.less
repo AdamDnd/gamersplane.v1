@@ -601,28 +601,41 @@
 	.rollVal-bold {
 		font-weight: bold;
 	}
-	.rollVal-success {
+	.rollVal-success,
+	.rollVal-green {
 		color: #060;
 	}
-	.rollVal-fail {
+	.rollVal-fail,
+	.rollVal-red {
 		color: @gp-red;
 	}
-	.rollVal-info {
+	.rollVal-info,
+	.rollVal-blue {
 		color: #009;
+	}
+
+	.rollVal-yellow {
+		color: #b8a500;
 	}
 
 	.rollVal-invert {
 		padding: 0 0.2em;
 		color: #fff;
 		background-color: #333;
-		&.rollVal-success {
+		&.rollVal-success,
+		&.rollVal-green {
 			background-color: #060;
 		}
-		&.rollVal-fail {
+		&.rollVal-fail,
+		&.rollVal-red {
 			background-color: @gp-red;
 		}
-		&.rollVal-info {
+		&.rollVal-info,
+		&.rollVal-blue {
 			background-color: #009;
+		}
+		&.rollVal-yellow {
+			background-color: #b8a500;
 		}
 	}
 
