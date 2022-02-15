@@ -32,7 +32,9 @@
 //define ("EMOTICONS_DIR", "/images/emoticons/");
 function splitByHeader($title,$text,$cssClass){
 	$ret="<div class='".$cssClass." ddCollection'>";
-	$ret=$ret.'<h2 class="headerbar hbDark">'.$title.'</h2>';
+	if($title!=''){
+		$ret=$ret.'<h2 class="headerbar hbDark">'.$title.'</h2>';
+	}
 
 	$abilityLines = explode("\n", trim($text));
 
@@ -96,6 +98,18 @@ function BBCode2Html($text) {
 			$escapedSnipped=str_replace("\n", "&#10;", $escapedSnipped);
 			return '<blockquote class="spoiler closed snippet"><div class="tag">[ <span class="open">+</span><span class="close">-</span> ] <span class="snippetName">'.$matches[1].'</span></div><div class="hidden">'.$matches[2].'</div><div style="display:none;" class="snippetBBCode">'.$escapedSnipped.'</div></blockquote>';
 	}, $text);
+
+	//editable block
+	$matches = null;
+	$formField=0;
+	$text=preg_replace_callback("/[\r\n]*\[#=\"?(.*?)\"?\](.*?)\[\/#\][\r\n]*/ms", function($matches) use (&$formField){
+			$escapedSnipped=str_replace("[", "&#91;", $matches[2]);
+			$escapedSnipped=str_replace("]", "&#93;", $escapedSnipped);
+			$escapedSnipped=str_replace("\r\n", "\n", $escapedSnipped);
+			$escapedSnipped=str_replace("\n", "&#10;", $escapedSnipped);
+			return '<div class="formBlock" data-blockfieldidx="'.($formField++).'"><h2 class="headerbar hbDark"><i class="ra ra-quill-ink"></i> '.$matches[1].'</h2><div class="formBlockRendered">'.$matches[2].'</div><div style="display:none;" class="formBlockBBCode">'.$escapedSnipped.'</div></div>';
+	}, $text);
+	//end editable block
 
 	//ability sections
 	$matches = null;
@@ -188,6 +202,37 @@ function BBCode2Html($text) {
 		$text = preg_replace("/([\r\n]?)[\r\n]*\[quote(?:=\"([\w\.]+?)\")?\](.*?)\[\/quote\]\s*/s", '\1<blockquote class="quote"><div class="quotee">\2 says:</div>\3</blockquote>', $text);
 	$text = str_replace('<div class="quotee"> says:</div>', '<div class="quotee">Quote:</div>', $text);
 
+	//form characters
+	$matches = null;
+	$formField=0;
+	$text=preg_replace_callback('/\[\_(([\w\_\$]*)\=)?([^\]]*)\]/', function($matches) use (&$formField){
+			$formVarName=$matches[2];
+			$formVal=$matches[3]; //todo strip tags
+			if($formVarName && substr( $formVarName, -1 )=='$'){
+				$isCalc=true;
+				$formVarName=rtrim($formVarName,"$");
+			}
+			else{
+				$isCalc=false;
+			}
+			preg_match('/(\d+)\/(\d+)/',$formVal,$splitVal);
+			$valAsInt=intval($splitVal[1]);
+			$outOf=intval($splitVal[2]);
+			$valHtml='';
+			$spanClasses='formVal'.($isCalc?" formCalc":'').($formVarName?" formVar":"");
+			if($outOf<=20 && $outOf>0 && $valAsInt<=$outOf && $valAsInt>=0){
+				$spanClasses.=' formCheck';
+				$valHtml.=str_repeat('<input class="notPretty" type="checkbox" checked/>',$valAsInt);
+				$valHtml.=str_repeat('<input class="notPretty" type="checkbox"/>',$outOf-$valAsInt);
+			}
+			else{
+				$spanClasses.=($isCalc?'':' formText');
+				$valHtml = ($isCalc?'':$formVal);
+			}
+			return '<span class="'.$spanClasses.'" data-varname="'.$formVarName.'" data-varcalc="'.($isCalc?$formVal:"").'" data-formfieldidx="'.($formField++).'">'.$valHtml.'</span>';
+	}, $text);
+	//end form characters
+
 	//map
 	$matches = null;
 	$text=preg_replace_callback("/\[map\](.*?)\[\/map\]/ms", function($matches){
@@ -228,7 +273,7 @@ function BBCode2Html($text) {
 
 	//tables
 	$matches = null;
-	$text=preg_replace_callback("/\[table(=([\"a-zA-Z ])*)?\](.*?)\[\/table\]/ms", function($matches){
+	$text=preg_replace_callback("/\[table(=([\"a-zA-Z0-9 ])*)?\](.*?)\[\/table\]/ms", function($matches){
 			$tableType=strtolower(trim(str_replace("=","",str_replace("\"","",$matches[1]))));
 			$tableClass="";
 			if(strpos($tableType,"center")!==false || strpos($tableType,"centre")!==false){
@@ -245,6 +290,18 @@ function BBCode2Html($text) {
 				$tableClass=" bbTable-hl";
 			} else if(strpos($tableType,"rolls")!==false){
 				$tableClass=" bbTableRolls";
+			}
+
+			if(strpos($tableType,"d20")!==false){
+				$tableClass.=" bbTableD20";
+			}
+
+			if(strpos($tableType,"compact")!==false){
+				$tableClass.=" bbTableCompact";
+			}
+
+			if(strpos($tableType,"dnd5e")!==false){
+				$tableClass.=" bbTableDnd5e";
 			}
 
 			if(strpos($tableType,"grid")!==false || strpos($tableType,"lines")!==false){
