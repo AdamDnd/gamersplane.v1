@@ -16,7 +16,7 @@
 		</td></tr>
 		<tr><td style="height:100px;padding:10px;background-color:#777;border:1px solid #111"><img src="<?=$pathBase?>/images/bodyComponents/logo.png" height="100" alt="Header image"></td></tr>
 		<tr><td style="padding:0 10px;border-color:#111;border-style:solid;border-width:0 1px 0 1px">
-			<h1 style="background-color:#C60;color:#FFF;margin:.3em auto; width: 538px;"><img src="<?=$pathBase?>/images/emails/text/Game_Invite.jpg" alt="Game Invite"></h1>
+			<h1 style="background-color:#C60;color:#FFF;margin:.3em auto; width: 538px;"><img src="<?=$pathBase?>/images/emails/text/Game_Invite.png" alt="Game Invite"></h1>
 <?	if ($gameInfo['system'] != 'custom') { ?>
 			<p style="text-align: center"><img src="http://gamersplane.com/images/logos/<?=$gameInfo['system']?>.png" style="max-width: 300px;"></p>
 <?	} ?>
