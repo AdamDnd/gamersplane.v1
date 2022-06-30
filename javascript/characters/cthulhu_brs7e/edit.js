@@ -57,8 +57,8 @@ controllers.controller('editCharacter_cthulhu_brs7e', ['$scope', '$http', '$q', 
 				if (val <= key)
 					return $scope.damage_build[key];
 		};
-		$scope.save = function () {
-			$scope.$parent.save();
+		$scope.save = function ($event) {
+			$scope.$parent.save($event);
 		};
 	});
 }]);
